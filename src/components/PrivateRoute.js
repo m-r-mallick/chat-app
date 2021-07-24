@@ -1,18 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Redirect, Route } from 'react-router';
 
 const PrivateRoute = ({ children, ...routeProps }) => {
-   const [profile, setProfile] = useState(true);
+   const profile = false;
 
    if (!profile) {
       return <Redirect to="/signin" />;
    }
 
-   return (
-      <div>
-         <Route {...routeProps}>{children}</Route>
-      </div>
-   );
+   return <Route {...routeProps}>{children}</Route>;
 };
 
 export default PrivateRoute;
