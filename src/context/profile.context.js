@@ -41,14 +41,6 @@ const ProfileProvider = ({ children }) => {
    }, []);
    return (
       <ProfileContext.Provider value={{ isLoading, profile }}>
-         <Button
-            onClick={() => {
-               setProfile(null);
-               setTimeout(() => setIsLoading(false), 3000);
-            }}
-         >
-            Sign Out
-         </Button>
          {children}
       </ProfileContext.Provider>
    );
