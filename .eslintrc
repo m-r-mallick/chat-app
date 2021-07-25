@@ -16,6 +16,8 @@
     "no-param-reassign": [0],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
-    "arrow-body-style":"off"
+    "arrow-body-style":"off",
+    "no-unused-vars":"warn",
+    "no-console":"off"
   }
 }
