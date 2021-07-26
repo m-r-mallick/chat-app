@@ -22,13 +22,19 @@ const EditableInput = ({
    const onSaveClick = async () => {
       const trimmed = input.trim();
       if (trimmed === '') {
-         Alert.error('Empty Value');
+         Alert.error(emptyMessage);
       }
-      if (trimmed !== initialValue) {
+      if (trimmed !== '' && trimmed !== initialValue) {
          await onSave(trimmed);
       }
       setIsEditable(false);
    };
+   const onClearClick = useCallback(() => {
+      if (input !== '') {
+         Alert.info('Cleared!', 2000);
+      }
+      setInput('');
+   }, []);
    return (
       <div>
          {label}
@@ -40,6 +46,11 @@ const EditableInput = ({
                value={input}
                onChange={onInputChange}
             />
+            {isEditable && (
+               <InputGroup.Button onClick={onClearClick}>
+                  <Icon icon="trash2" />
+               </InputGroup.Button>
+            )}
 
             <InputGroup.Button onClick={onEditClick}>
                <Icon icon={isEditable ? 'close' : 'edit2'} />

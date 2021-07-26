@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Button } from 'rsuite';
+import { Alert } from 'rsuite';
 import { auth, database } from '../misc/firebase';
 
 const ProfileContext = createContext();
@@ -13,15 +13,24 @@ const ProfileProvider = ({ children }) => {
          if (authObj) {
             userRef = database.ref(`/profiles/${authObj.uid}`);
             userRef.on('value', snap => {
-               const { name, createdAt } = snap.val();
-               console.log(name, createdAt);
-               const data = {
-                  name,
-                  createdAt,
-                  uid: authObj.uid,
-                  email: authObj.email,
-               };
-               setProfile(data);
+               try {
+                  const { name, createdAt } = snap.val();
+                  console.log('Current Login - ', { name, createdAt });
+                  const data = {
+                     name,
+                     createdAt,
+                     uid: authObj.uid,
+                     email: authObj.email,
+                  };
+                  setProfile(data);
+               } catch (error) {
+                  Alert.error(`Error - ${error.message}`, 4000);
+                  if (userRef) {
+                     userRef.off();
+                  }
+                  setProfile(null);
+                  setIsLoading(false);
+               }
             });
          } else {
             if (userRef) {
