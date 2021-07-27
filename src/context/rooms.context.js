@@ -12,7 +12,7 @@ const RoomsProvider = ({ children }) => {
       roomListRef.on('value', snap => {
          try {
             const data = transformToArrayWithId(snap.val());
-            Alert.success(`Room ${rooms[0].name} fetched!`, 4000);
+            Alert.success(`Rooms fetched!`, 4000);
 
             setRooms(data);
          } catch (error) {
