@@ -1,12 +1,15 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Loader, Nav } from 'rsuite';
+import { Alert, Loader, Nav } from 'rsuite';
 import { useRooms } from '../context/rooms.context';
 import RoomItem from './RoomItem';
 
 const ChatRoomList = ({ elHeight }) => {
    const rooms = useRooms();
    const location = useLocation();
+   if (rooms && rooms.length > 0) {
+      Alert.success(`Rooms fetched!`, 4000);
+   }
    return (
       <Nav
          appearance="subtle"
