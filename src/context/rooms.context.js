@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Alert } from 'rsuite';
 import { database } from '../misc/firebase';
 import { transformToArrayWithId } from '../misc/helpers';
@@ -12,8 +12,9 @@ const RoomsProvider = ({ children }) => {
       roomListRef.on('value', snap => {
          try {
             const data = transformToArrayWithId(snap.val());
-            setRooms(data);
             Alert.success(`Room ${rooms[0].name} fetched!`, 4000);
+
+            setRooms(data);
          } catch (error) {
             Alert.error(error.message, 4000);
          }
@@ -23,7 +24,13 @@ const RoomsProvider = ({ children }) => {
          roomListRef.off();
       };
    }, []);
-   return <RoomsContext.Provider value>{children}</RoomsContext.Provider>;
+   return (
+      <RoomsContext.Provider value={rooms}>{children}</RoomsContext.Provider>
+   );
 };
 
 export default RoomsProvider;
+
+export const useRooms = () => {
+   return useContext(RoomsContext);
+};
