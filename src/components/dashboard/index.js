@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Button, Divider, Drawer } from 'rsuite';
 import { useProfile } from '../../context/profile.context';
 import { database } from '../../misc/firebase';
@@ -8,6 +8,7 @@ import ProviderBlock from './ProviderBlock';
 
 const Dashboard = ({ onSignOut }) => {
    const { profile } = useProfile();
+   const [avatarUrl, setAvatarUrl] = useState(null);
 
    const onSave = async newData => {
       const userNicknameRef = database
@@ -21,6 +22,27 @@ const Dashboard = ({ onSignOut }) => {
       }
    };
 
+   useEffect(() => {
+      // const getAvatar = () => {
+      const userAvatarRef = database
+         .ref(`/profiles/${profile.uid}`)
+         .child(`avatar`);
+      userAvatarRef.on('value', snap => {
+         try {
+            setAvatarUrl(snap.val());
+         } catch (err) {
+            userAvatarRef.off();
+            Alert.error(err.message, 4000);
+         }
+      });
+
+      return () => {
+         if (userAvatarRef) {
+            userAvatarRef.off();
+         }
+      };
+   }, []);
+
    return (
       <>
          <Drawer.Header>
@@ -28,6 +50,13 @@ const Dashboard = ({ onSignOut }) => {
          </Drawer.Header>
 
          <Drawer.Body>
+            {avatarUrl && (
+               <img
+                  src={avatarUrl}
+                  alt="avatar"
+                  style={{ borderRadius: '10%' }}
+               />
+            )}
             <h1>Hey, {profile.name}</h1>
             <ProviderBlock />
             <Divider />
