@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Nav } from 'rsuite';
+import { Nav } from 'rsuite';
 import RoomItem from './RoomItem';
 
 const ChatRoomList = ({ elHeight }) => {
