@@ -14,11 +14,12 @@ const ProfileProvider = ({ children }) => {
             userRef = database.ref(`/profiles/${authObj.uid}`);
             userRef.on('value', snap => {
                try {
-                  const { name, createdAt } = snap.val();
-                  console.log('Current Login - ', { name, createdAt });
+                  const { name, createdAt, avatar } = snap.val();
+                  console.log('Current Login - ', { name });
                   const data = {
                      name,
                      createdAt,
+                     avatar,
                      uid: authObj.uid,
                      email: authObj.email,
                   };
