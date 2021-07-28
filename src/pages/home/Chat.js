@@ -21,7 +21,6 @@ const Chat = () => {
    }
    const { name, description } = currentChat;
    const currentChatData = { name, description };
-   console.log(currentChatData);
    return (
       <CurrentRoomProvider data={currentChatData}>
          <div className="chat-top">
