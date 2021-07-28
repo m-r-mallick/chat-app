@@ -1,7 +1,7 @@
 import React from 'react';
 
-const ChatBottom = ({ createdAt }) => {
-   return <div>{createdAt}</div>;
+const ChatBottom = () => {
+   return <div>bottom</div>;
 };
 
 export default ChatBottom;
