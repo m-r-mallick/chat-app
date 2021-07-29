@@ -6,6 +6,8 @@ import Messages from '../../components/chat-window/messages';
 import ChatTop from '../../components/chat-window/top';
 import { CurrentRoomProvider } from '../../context/current-room.context';
 import { useRooms } from '../../context/rooms.context';
+import { auth } from '../../misc/firebase';
+import { transformToArray } from '../../misc/helpers';
 
 const Chat = () => {
    const { chatId } = useParams();
@@ -20,7 +22,9 @@ const Chat = () => {
       return <h6 className="text-center mt-page">Chat room not found!</h6>;
    }
    const { name, description } = currentChat;
-   const currentChatData = { name, description };
+   const admins = transformToArray(currentChat.admins);
+   const isAdmin = admins.includes(auth.currentUser.uid);
+   const currentChatData = { name, description, admins, isAdmin };
    return (
       <CurrentRoomProvider data={currentChatData}>
          <div className="chat-top">

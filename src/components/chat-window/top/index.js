@@ -9,6 +9,7 @@ import RoomInfoBtnModal from './RoomInfoBtnModal';
 const ChatTop = () => {
    const name = useCurrentRoom(val => val.name);
    const isMobile = useMediaQuery(`(max-width: 992px)`);
+   const isAdmin = useCurrentRoom(val => val.isAdmin);
    return (
       <div>
          <div className="d-flex justify-content-between align-items-center">
@@ -27,7 +28,7 @@ const ChatTop = () => {
                <span>{name}</span>
             </h4>
             <ButtonToolbar className="ws-nowrap">
-               <EditRoomBtnDrawer />
+               {isAdmin && <EditRoomBtnDrawer />}
             </ButtonToolbar>
          </div>
          <div className="d-flex justify-content-between align-items-center">

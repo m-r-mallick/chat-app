@@ -26,7 +26,6 @@ const ProfileProvider = ({ children }) => {
          if (authObj) {
             userRef = database.ref(`/profiles/${authObj.uid}`);
             userStatusRef = database.ref(`/status/${authObj.uid}`);
-
             userRef.on('value', snap => {
                try {
                   const { name, createdAt, avatar } = snap.val();
