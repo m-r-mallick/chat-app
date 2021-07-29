@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button, Modal } from 'rsuite';
 import { useModelState } from '../../../misc/custom-hooks';
 import ProfileAvatar from '../../ProfileAvatar';
 
 const ProfileInfoBtnModal = ({ profile, ...btnProps }) => {
    const { isOpen, open, close } = useModelState();
-   const [isLoading, setIsLoading] = useState(false);
    const { name, avatar, createdAt } = profile;
    const memberSince = new Date(createdAt).toLocaleDateString();
    const shortName = profile.name.split(' ')[0];
