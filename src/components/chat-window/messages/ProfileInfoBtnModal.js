@@ -28,7 +28,9 @@ const ProfileInfoBtnModal = ({ profile, children, ...btnProps }) => {
             </Modal.Body>
             <Modal.Footer>
                {children}
-               <Button onClick={close}>Close</Button>
+               <Button className="mt-2" onClick={close}>
+                  Close
+               </Button>
             </Modal.Footer>
          </Modal>
       </>
