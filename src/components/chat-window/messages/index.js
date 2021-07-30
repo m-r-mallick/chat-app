@@ -1,31 +1,73 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router';
-import { Alert } from 'rsuite';
+import { Alert, Button } from 'rsuite';
 import { auth, database, storage } from '../../../misc/firebase';
 import { groupBy, transformToArrayWithId } from '../../../misc/helpers';
 import MessageItem from './MessageItem';
 
+const PAGE_SIZE = 15;
+const messagesRef = database.ref(`/messages`);
+
+function shouldScrollToBottom(node, threshold = 30) {
+   const percentage =
+      (100 * node.scrollTop) / (node.scrollHeight - node.clientHeight) || 0;
+   return percentage > threshold;
+}
+
 const Messages = () => {
    const { chatId } = useParams();
    const [messages, setMessages] = useState(null);
+   const [limit, setLimit] = useState(PAGE_SIZE);
+   const selfRef = useRef();
 
    const isChatEmpty = messages && messages.length === 0;
    const canShowMessages = messages && messages.length > 0;
 
+   const loadMessages = useCallback(
+      limitToLast => {
+         messagesRef.off();
+         const node = selfRef.current;
+
+         messagesRef
+            .orderByChild(`roomId`)
+            .equalTo(chatId)
+            .limitToLast(limitToLast || PAGE_SIZE)
+            .on('value', snap => {
+               const data = transformToArrayWithId(snap.val());
+               setMessages(data);
+               if (shouldScrollToBottom(node)) {
+                  node.scrollTop = node.scrollHeight;
+               }
+            });
+         setLimit(prevState => prevState + PAGE_SIZE);
+      },
+      [chatId]
+   );
+
+   const onLoadMore = useCallback(() => {
+      const node = selfRef.current;
+      const oldHeight = node.scrollHeight;
+      loadMessages(limit);
+      setTimeout(() => {
+         const newHeight = node.scrollHeight;
+
+         node.scrollTop = oldHeight - newHeight;
+      }, 1000);
+   }, [loadMessages, limit]);
+
    useEffect(() => {
-      const messagesRef = database.ref(`/messages`);
-      messagesRef
-         .orderByChild(`roomId`)
-         .equalTo(chatId)
-         .on('value', snap => {
-            const data = transformToArrayWithId(snap.val());
-            setMessages(data);
-         });
+      const node = selfRef.current;
+
+      loadMessages();
+
+      setTimeout(() => {
+         node.scrollTop = node.scrollHeight;
+      }, 1000);
 
       return () => {
          messagesRef.off('value');
       };
-   }, [chatId]);
+   }, [loadMessages]);
 
    const handleAdmin = useCallback(
       async uid => {
@@ -101,7 +143,9 @@ const Messages = () => {
 
          if (file) {
             try {
+               console.log('URL to be deleted', file.url);
                const fileRef = storage.refFromURL(file.url);
+               console.log('Path in Storage', fileRef.fullPath);
                await fileRef.delete();
             } catch (error) {
                Alert.error(error.message, 4000);
@@ -135,7 +179,14 @@ const Messages = () => {
    };
 
    return (
-      <ul className="msg-list custom-scroll">
+      <ul className="msg-list custom-scroll" ref={selfRef}>
+         {messages && messages.length === PAGE_SIZE && (
+            <li className="text-center mt-2 mb-1">
+               <Button color="green" onClick={onLoadMore}>
+                  Load More
+               </Button>
+            </li>
+         )}
          {isChatEmpty && <li>No messages yet...</li>}
          {canShowMessages && renderMessages()}
       </ul>
