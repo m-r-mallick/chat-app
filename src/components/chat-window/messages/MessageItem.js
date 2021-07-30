@@ -2,17 +2,19 @@ import React, { memo } from 'react';
 import { Button } from 'rsuite';
 import TimeAgo from 'timeago-react';
 import { useCurrentRoom } from '../../../context/current-room.context';
-import { useHover } from '../../../misc/custom-hooks';
+import { useHover, useMediaQuery } from '../../../misc/custom-hooks';
 import { auth } from '../../../misc/firebase';
+import { transformToArray } from '../../../misc/helpers';
 import PresenceDot from '../../PresenceDot';
 import ProfileAvatar from '../../ProfileAvatar';
 import IconBtnControl from './IconBtnControl';
 import ProfileInfoBtnModal from './ProfileInfoBtnModal';
 
-const MessageItem = ({ message, handleAdmin }) => {
-   const { author, createdAt, text } = message;
+const MessageItem = ({ message, handleAdmin, handleLike }) => {
+   const { author, createdAt, text, likes, likeCount } = message;
 
    const [selfRef, isHovered] = useHover();
+   const isMobile = useMediaQuery(`(max-width: 992px)`);
 
    const admins = useCurrentRoom(val => val.admins);
    const isAdmin = useCurrentRoom(val => val.isAdmin);
@@ -20,6 +22,9 @@ const MessageItem = ({ message, handleAdmin }) => {
    const isMsgAuthorAdmin = admins.includes(author.uid);
    const isAuthor = auth.currentUser.uid === author.uid;
    const canGrantAdmin = isAdmin && !isAuthor;
+
+   const canShowIcons = isMobile || isHovered;
+   const isLiked = transformToArray(likes).includes(auth.currentUser.uid);
 
    return (
       <>
@@ -58,14 +63,20 @@ const MessageItem = ({ message, handleAdmin }) => {
                   datetime={createdAt}
                   className="font-normal text-black-45 ml-2"
                />
-               <IconBtnControl
-                  {...(true ? { color: 'red' } : {})}
-                  isVisible
-                  iconName="heart"
-                  tooltip="Like this message"
-                  onClick={() => {}}
-                  badgeContent={5}
-               />
+               {canShowIcons && (
+                  <IconBtnControl
+                     {...(isLiked ? { color: 'red' } : {})}
+                     isVisible
+                     iconName="heart"
+                     tooltip={
+                        isLiked ? 'Remove from favorites' : 'Like this message'
+                     }
+                     onClick={() => {
+                        handleLike(message.id);
+                     }}
+                     badgeContent={likeCount}
+                  />
+               )}
             </div>
             <div>
                <span className="word-breal-all">{text}</span>

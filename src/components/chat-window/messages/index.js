@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Alert } from 'rsuite';
-import { database } from '../../../misc/firebase';
+import { auth, database } from '../../../misc/firebase';
 import { transformToArrayWithId } from '../../../misc/helpers';
 import MessageItem from './MessageItem';
 
@@ -48,6 +48,30 @@ const Messages = () => {
       [chatId]
    );
 
+   const handleLike = useCallback(async msgId => {
+      const { uid } = auth.currentUser;
+      const adminsRef = database.ref(`/messages/${msgId}`);
+      let alertMsg;
+      await adminsRef.transaction(msg => {
+         if (msg) {
+            if (msg.likes && msg.likes[uid]) {
+               msg.likeCount -= 1;
+               msg.likes[uid] = null;
+               alertMsg = 'Removed from favorites!';
+            } else {
+               msg.likeCount += 1;
+               if (!msg.likes) {
+                  msg.likes = {};
+               }
+               msg.likes[uid] = true;
+               alertMsg = 'Liked!';
+            }
+         }
+         return msg;
+      });
+      Alert.info(alertMsg, 4000);
+   }, []);
+
    return (
       <ul className="msg-list custom-scroll">
          {isChatEmpty && <li>No messages yet...</li>}
@@ -58,6 +82,7 @@ const Messages = () => {
                      key={msg.id}
                      message={msg}
                      handleAdmin={handleAdmin}
+                     handleLike={handleLike}
                   />
                </li>
             ))}
