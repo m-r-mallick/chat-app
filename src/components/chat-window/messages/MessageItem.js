@@ -10,7 +10,7 @@ import ProfileAvatar from '../../ProfileAvatar';
 import IconBtnControl from './IconBtnControl';
 import ProfileInfoBtnModal from './ProfileInfoBtnModal';
 
-const MessageItem = ({ message, handleAdmin, handleLike }) => {
+const MessageItem = ({ message, handleAdmin, handleLike, handleDelete }) => {
    const { author, createdAt, text, likes, likeCount } = message;
 
    const [selfRef, isHovered] = useHover();
@@ -63,18 +63,26 @@ const MessageItem = ({ message, handleAdmin, handleLike }) => {
                   datetime={createdAt}
                   className="font-normal text-black-45 ml-2"
                />
-               {canShowIcons && (
+               <IconBtnControl
+                  {...(isLiked ? { color: 'red' } : {})}
+                  isVisible={canShowIcons}
+                  iconName="heart"
+                  tooltip={
+                     isLiked ? 'Remove from favorites' : 'Like this message'
+                  }
+                  onClick={() => {
+                     handleLike(message.id);
+                  }}
+                  badgeContent={likeCount}
+               />
+               {isAuthor && (
                   <IconBtnControl
-                     {...(isLiked ? { color: 'red' } : {})}
-                     isVisible
-                     iconName="heart"
-                     tooltip={
-                        isLiked ? 'Remove from favorites' : 'Like this message'
-                     }
+                     isVisible={canShowIcons}
+                     iconName="close"
+                     tooltip="Delete this message"
                      onClick={() => {
-                        handleLike(message.id);
+                        handleDelete(message.id);
                      }}
-                     badgeContent={likeCount}
                   />
                )}
             </div>
