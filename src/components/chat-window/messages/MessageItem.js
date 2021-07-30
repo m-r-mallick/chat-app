@@ -36,6 +36,15 @@ const MessageItem = ({ message, handleAdmin, handleLike, handleDelete }) => {
             </div>
          );
       }
+      if (contentType.includes(`audio`)) {
+         return (
+            // eslint-disable-next-line jsx-a11y/media-has-caption
+            <audio controls>
+               <source src={url} type="audio/mp3" />
+               Your browser does not support audio element!
+            </audio>
+         );
+      }
       return <a href={url}>Download {name}</a>;
    };
 
@@ -94,7 +103,7 @@ const MessageItem = ({ message, handleAdmin, handleLike, handleDelete }) => {
                      iconName="close"
                      tooltip="Delete this message"
                      onClick={() => {
-                        handleDelete(message.id);
+                        handleDelete(message.id, file);
                      }}
                   />
                )}
