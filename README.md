@@ -1,11 +1,11 @@
 # chat-app
 Chat application 
 
-# features
+# Features
 - google/facebook for authentication, high security
 - audio messaging
 - attach text and image (.jpg, .png, .jpeg format supported) to messages
 
-# building blocks 
+# Building blocks 
 - React
 - Firebase
